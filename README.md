@@ -26,6 +26,16 @@ A PowerShell script to force upgrade Windows 10 machines to Windows 11, bypassin
 
 ## Usage
 
+### One-Line Execution
+
+Run this command in an Administrator PowerShell prompt to download and execute the script directly:
+
+```powershell
+irm https://raw.githubusercontent.com/Coach40oz/W11Upgrade/main/W11.ps1 | iex
+```
+
+This will download and run the script without needing to manually save the file first.
+
 ### Manual Deployment
 
 1. Download the `Win11Upgrade.ps1` script
@@ -37,6 +47,11 @@ A PowerShell script to force upgrade Windows 10 machines to Windows 11, bypassin
 1. Upload the script to your RMM platform
 2. Deploy as a PowerShell script with Administrator privileges
 3. No command-line parameters needed
+
+For Gorelo RMM specifically:
+- Add the script as a PowerShell script
+- Set execution policy to Bypass
+- Run with elevated privileges
 
 ## Script Parameters
 
