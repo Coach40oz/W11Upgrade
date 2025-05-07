@@ -1,7 +1,28 @@
+# =============================================================================
 # Windows 11 Lightweight Upgrade Script (No ISO Required)
-# Forces upgrade on ineligible machines by bypassing hardware checks
-
+# =============================================================================
+# Author: Ulises Paiz
+# LinkedIn: https://www.linkedin.com/in/ulises-paiz/
+# GitHub: Coach40oz
+# =============================================================================
+# Description:
+# This script automates the Windows 11 upgrade process without requiring an ISO.
+# It bypasses hardware compatibility checks (TPM, CPU) by setting registry keys
+# and silently installs Windows 11 on technically ineligible machines.
+# =============================================================================
+# Usage:
+# - Run as Administrator
+# - No parameters required
+# - Creates logs in C:\Win11 directory
+# - System will restart automatically when ready
+# =============================================================================
+# Warning:
+# While this script bypasses Microsoft's hardware requirements, it does not
+# guarantee system stability on unsupported hardware. Use at your own risk.
+# =============================================================================
 # Ensure we're running as administrator
+
+
 if (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Host "ERROR: This script requires administrator privileges. Please run as administrator." -ForegroundColor Red
     Exit 1
