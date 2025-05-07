@@ -1,99 +1,127 @@
 # Windows 11 Lightweight Upgrade Script
 
-A PowerShell script to force upgrade Windows 10 machines to Windows 11, bypassing hardware checks and TPM requirements. This no-ISO approach is designed for mass deployment via RMM tools.
+A PowerShell script to force-upgrade Windows 10 machines to Windows 11 without an ISO, bypassing hardware checks and TPM requirements. Designed for mass deployment via RMM tools.
+
+---
 
 ## Features
 
-- **No ISO Required**: Downloads the Windows 11 Installation Assistant directly from Microsoft
-- **Bypasses Hardware Checks**: Sets registry keys to bypass TPM, CPU, and other hardware requirements
-- **Silent Installation**: Runs with parameters to minimize user interaction
-- **RMM Friendly**: Small footprint makes it easy to deploy via RMM tools
-- **Self-Contained**: Creates all necessary folders and handles the complete upgrade process
+* **No ISO Required**: Downloads the Windows 11 Installation Assistant directly from Microsoft.
+* **Bypasses Hardware Checks**: Sets registry keys to ignore TPM, CPU, and other requirement checks.
+* **Silent Installation**: Runs with flags to minimize or eliminate user interaction.
+* **RMM Friendly**: Small footprint and straightforward parameters make it easy to deploy via any RMM solution.
+* **Self-Contained**: Creates necessary folders, handles downloads, logging, and launch.
+
+---
 
 ## Compatibility
 
-- **Tested successfully with Gorelo RMM tool**
-- Should work with any RMM solution that can run PowerShell scripts
-- If you test this with other RMM tools, please leave a comment with your results!
+* **Tested** with Gorelo RMM tool.
+* **Should Work** with any RMM platform capable of running PowerShell scripts with administrative rights.
+
+> *If you test this on other RMM solutions, please share your results!*
+
+---
 
 ## How It Works
 
-1. Creates a C:\Win11 folder for downloads and logs
-2. Sets registry keys to bypass Windows 11 hardware requirements
-3. Downloads the Windows 11 Installation Assistant (~4MB) directly from Microsoft
-4. Runs the Installation Assistant with silent parameters
-5. The Installation Assistant downloads and installs Windows 11 in the background
+1. **Folder Creation**: Creates `C:\Win11` for storing the installer and logs.
+2. **Registry Bypass**: Sets keys under `HKLM:\SYSTEM\Setup\MoSetup` to allow upgrades on unsupported hardware.
+3. **Download**: Fetches `Windows11InstallationAssistant.exe` (\~4 MB) from Microsoft.
+4. **Silent Launch**: Invokes the assistant with parameters to skip the EULA, hardware checks, and UI.
+5. **Background Upgrade**: The assistant downloads the full Windows 11 payload and runs the in-place upgrade.
+
+---
 
 ## Usage
 
-### One-Line Execution
+### One‑Line Execution
 
-Run this command in an Administrator PowerShell prompt to download and execute the script directly:
+Run directly from an elevated PowerShell prompt:
 
 ```powershell
-irm https://raw.githubusercontent.com/Coach40oz/W11Upgrade/main/W11.ps1 | iex
+iwr https://raw.githubusercontent.com/Coach40oz/W11Upgrade/main/W11.ps1 -UseBasicParsing | iex
 ```
 
-This will download and run the script without needing to manually save the file first.
+This downloads and executes the script without saving a local file.
 
 ### Manual Deployment
 
-1. Download the `Win11Upgrade.ps1` script
-2. Run PowerShell as Administrator
-3. Execute the script: `.\Win11Upgrade.ps1`
+1. Download `Win11Upgrade.ps1`.
+2. Open PowerShell **as Administrator**.
+3. Run:
+
+   ```powershell
+   .\Win11Upgrade.ps1
+   ```
 
 ### RMM Deployment
 
-1. Upload the script to your RMM platform
-2. Deploy as a PowerShell script with Administrator privileges
-3. No command-line parameters needed
+1. Upload the script to your RMM platform.
 
-For Gorelo RMM specifically:
-- Add the script as a PowerShell script
-- Set execution policy to Bypass
-- Run with elevated privileges
+---
 
 ## Script Parameters
 
-The Windows 11 Installation Assistant is launched with these parameters:
+The script launches the Windows 11 Installation Assistant with these switches:
 
-- `/QuietInstall` - Performs installation without user interaction
-- `/SkipEULA` - Bypasses the End User License Agreement prompt
-- `/auto upgrade` - Automatically performs the upgrade
-- `/NoRestartUI` - Suppresses restart UI prompts
-- `/copylogs $dir` - Copies logs to our folder
+| Parameter        | Description                                             |
+| ---------------- | ------------------------------------------------------- |
+| `/QuietInstall`  | Hides interactive UI                                    |
+| `/SkipEULA`      | Auto-accepts the End User License Agreement             |
+| `/Auto Upgrade`  | Initiates in-place upgrade mode (preserves files/apps)  |
+| `/NoRestartUI`   | Suppresses reboot countdown dialog                      |
+| `/CopyLogs $dir` | Copies setup logs to the designated folder (`C:\Win11`) |
+
+---
 
 ## Expected Timeline
 
-The upgrade process typically takes:
-- 30-120 minutes for downloading (depending on internet speed)
-- 30-60 minutes for installation
-- Total time: 1-4 hours
+* **Download**: 30–120 minutes (varies by internet speed).
+* **Installation**: 30–60 minutes.
+* **Total**: 1–4 hours, followed by an automatic reboot when ready.
 
-The system will restart automatically when ready.
+---
 
 ## Troubleshooting
 
-If the upgrade doesn't appear to be progressing:
+* **No Progress?**
 
-1. Check Task Manager for Windows Update or SetupHost processes
-2. Check Windows Update section in Settings
-3. Look for the creation of C:\$WINDOWS.~BT folder (appears during installation)
-4. Check logs in C:\Win11
+  * Verify `C:\Win11` exists and contains logs.
+  * Check Task Manager for **Windows Update**, **Modern Setup Host**, or **SetupHost** processes.
+  * Look for `C:\$WINDOWS.~BT` folder creation.
+* **Log Locations**:
+
+  * `C:\Win11\Panther\Setupact.log` and `Setuperr.log`
+  * Default: `C:\Windows\Panther\` and `C:\$WINDOWS.~BT\Sources\Panther\`
+  * CBS: `C:\Windows\Logs\CBS\CBS.log`
+* **Compatibility Blocked?**
+
+  * Ensure registry bypass key exists under `HKLM:\SYSTEM\Setup\MoSetup`.
+  * Add `/SkipCompatCheck` if needed to skip PC Health Check requirements.
+
+---
 
 ## Disclaimer
 
-- This script modifies registry settings to bypass Microsoft's hardware requirements
-- Use at your own risk on machines that don't meet Windows 11 requirements
-- Always backup important data before upgrading
-- Not officially supported by Microsoft
+> This script **modifies registry settings** to bypass Microsoft’s official hardware requirements.
+> Use **at your own risk** on unsupported hardware.
+> Always **backup important data** before proceeding.
+> Not officially supported by Microsoft.
+
+---
 
 ## License
 
-[MIT License](LICENSE)
+This project is licensed under the [MIT License](LICENSE).
+
+---
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome!
 
-If you encounter any issues or have suggestions for improvements, please open an issue in the GitHub repository.
+* Submit bugs or feature requests via GitHub Issues.
+* Open a Pull Request to propose improvements.
+
+Thank you for using and improving this script!
